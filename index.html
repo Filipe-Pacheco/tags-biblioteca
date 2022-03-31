@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Dashboar Biblioteca</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="bootstrap-5.1.3-dist/css/bootstrap.min.css" rel="stylesheet" integrity="iwQ4lTxVYIsEFq1lkoRA6Dah5m07F9o6+Lrm37YSAPNUEoLfWz5JS9AX2e3s0aOs" crossorigin="anonymous">
+    <link rel="stylesheet" href="bootstrap-5.1.3-dist/css/bootstrap-grid.min.css" integrity="sha512-q0LpKnEKG/pAf1qi1SAyX0lCNnrlJDjAvsyaygu07x8OF4CEOpQhBnYiFW6YDUnOOcyAEiEYlV4S9vEc6akTEw==" crossorigin="anonymous" referrerpolicy="no-referrer" />    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    
+    <!-- Jquery 3.6.0 -->
+    <script src="jquery-3.6.0.js" ></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
+
+    <!-- Tabular v5.0.7 -->
+    <link href="tabulator_semanticui.min.css" rel="stylesheet">
+    <script type="text/javascript" src="tabulator.min.js"></script>
+
+    <!-- Tag tokenizer SELECT2.js | Mais informações em: https://select2.org/-->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+</head>
+    <body style="height: 100vh;">
+        <div class="container-fluid main-wrap" style="height: -webkit-fill-available; height: inherit;">
+            <!-- Seção superior -->
+            <div id="elem_lista_bases" class="row mt-2 mx-2" style="padding-bottom: 10px; border-bottom: grey 1px solid;">
+                <!-- Titulo -->
+                <!-- <div class="col" style="align-self: center;">
+                    <h5>Editor de Aacervo</h5>
+                </div> -->
+                <div class="col">
+                    <!-- Botão Acervo Completo -->
+                    <button id="btn_completo_acervo" type="button" class="btn btn-outline-primary btn-bases mx-2">Acervo completo: <strong id="num_acervo_completo"></strong></button>
+                    <!-- Botão Minha Biblioteca -->
+                    <button id="btn_mb_acervo" type="button" class="btn btn-outline-primary btn-bases mx-2">Minha Biblioteca: <strong id="num_mb"></strong></button>
+                    <!-- Botão Pearson -->
+                    <button id="btn_pearson_acervo" type="button" class="btn btn-outline-primary btn-bases mx-2">Pearson: <strong id="num_pearson"></strong></button>
+                    <!-- Botão Clinical Key -->
+                    <button id="btn_clinical_acervo" type="button" class="btn btn-outline-primary btn-bases mx-2">Clinical Key: <strong id="num_clinical"></strong></button>
+                    <!-- Botão O'Reilly -->
+                    <button id="btn_oreilly_acervo" type="button" class="btn btn-outline-secondary btn-bases mx-2" disabled>O'Reilly: <strong id="num_oreilly"></strong></button>
+                    <!-- Botões para alterar o modo de Exibição -->
+                </div>
+                <div class="col-2" style="text-align: end;">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input " type="checkbox" role="switch" id="btn_switch_multiselect">
+                        <label class="form-check-label" for="btn_switch_multiselect">Modo multi seleção</label>
+                        <a id="atualiza_tabela" class="text-decoration-none">
+                            Atualizar Tabela
+                            <i class="bi bi-arrow-repeat"></i>
+                        </a>
+                    </div>
+                    <!-- <a onClick="" id="" class="btn btn-primary" href="#" role="button">
+                        <i class="bi bi-grid"></i>
+                    </a>
+                    <a onClick="" id="" class="btn btn-primary" href="#" role="button">
+                        <i class="bi bi-list-ul"></i>
+                    </a> -->
+                </div>
+            </div>
+            <div class="row mb-2">
+                <!-- Lado esquerdo -->
+                <div class="col-9">
+                    <!-- Tabela de resultados -->
+                    <div id="main-table" style="max-width: 98vw; height: 80vh; max-height: 100vh;"></div>
+                </div>
+
+                <!-- Lado direito -->
+                <div id="div_edicao_livro" class="col" style="background-color: #fafafa;">
+
+                    <!-- Editor de tags -->
+                    <div class="row" style="overflow: auto;">
+                        <div class="col-3" style="text-align: center;">
+                            <img id="livro_edit_img" src="placeholder.jpg" class="img-fluid livro-img" />
+                        </div>
+                        <div class="col">
+                            <h6 class="mt-2"><strong id="livro_edit_titulo"></strong></h6>
+                        </div>
+                    </div>
+
+                    <div class="row" style="height: 30%; overflow: auto;">
+                        <p id="livro_edit_descricao" style="max-height: 350px;"></p>
+                    </div>
+
+                    <hr />
+                    <!-- Tags do livro -->
+                    <div class="row">
+                        <div class="col" id="livro_edit_categorias" style="overflow-x: auto;">
+                            <h5 id="mensagem_preload">Selecione um livro para começar</h5>
+                        </div>
+                    </div>
+                    <hr />
+                    <!-- Tags uninove -->
+                    <div class="row" style="height: 30px;" id="tags_uninove_section">
+                        <h6>Tags de curso Uninove:</h6>
+                        <!-- SELECT2 INPUT -->
+                        <select id="tags-input-selector_single_book" class="tags-input-selector mt-2" style="width: 100%;" name="states[]" multiple="multiple"></select>
+                        <button type="button" id="salvar-edicao-livro-on-stage" class="btn btn-primary m-3" style="width: fit-content;">Salvar</button>
+                    </div>
+                </div>
+
+                <!-- Div Multiselect -->
+                <div class="col pt-3" id="div_multiselect" style="background-color: #fafafa; display: none;">
+                    <button id="deselect-all" class="btn btn-outline-dark" href="#" role="button">
+                        Remover Seleção
+                    </button >
+                    <button id="select-all" class="btn btn-outline-dark" href="#" role="button">
+                        Selecionar Tudo
+                    </button >
+                    <hr>
+                    <h5>Livros Selecionados:</h5>
+                    <hr>
+                    <ul id="lista_multiselect">
+                        Selecione um livro para começar
+                    </ul>
+                    <hr>
+                    <div class="row" style="height: 30px;" id="tags_uninove_section">
+                        <h6>Tags de curso Uninove:</h6>
+                        <!-- SELECT2 INPUT NO MODO MULTISELEÇÃO-->
+                        <select id="tags-input-selector-multiselect" class="tags-input-selector mt-2" style="width: 100%;" name="states[]" multiple="multiple"></select>
+                        <button type="button" id="salvar-edicao-livro-on-stage-multiselect" class="btn btn-primary m-3" style="width: fit-content;">Aplicar para todos</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Alerta flutuante -->
+        <div class="position-fixed bottom-0 start-0 p-3" style="z-index: 11">
+            <div id="alerta_flutuante" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto text-primary" id="toast_header_text">Aqui vai o título</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="toast_body_text">
+                    Aqui vai o corpo do text
+                </div>
+            </div>
+        </div>
+        
+
+    <style>
+        /* .main-wrap{
+            height: 95vh;
+        } */
+        .livro-img {
+            box-shadow: var(--shadow) 0 3px 8px;
+            height: max-content;
+            margin: 10px;
+        }
+        .select2-selection__choice{
+            background-color: rgb(255, 193, 7) !important;
+            border-color: black;
+        }
+        .select2-selection__choice__remove{
+            background-color: rgb(255, 193, 7) !important;
+            border-color: black;
+        }
+        .btn-bases{
+            width: fit-content;
+        }
+
+    </style>
+
+    <script>
+        var firebaseConfig = {
+        apiKey: "AIzaSyBlNxp6bV-Ypr6o1BZC_V0J326iwAJDqUw",
+        authDomain: "biblioteca-vue-24518.firebaseapp.com",
+        projectId: "biblioteca-vue-24518",
+        storageBucket: "biblioteca-vue-24518.appspot.com",
+        messagingSenderId: "59882409262",
+        appId: "1:59882409262:web:526c27c1a36d0d2a0cbebf",
+        measurementId: "G-ZQXVGNCBTZ"
+    };
+
+    // const firebaseConfig = {
+    //     apiKey: "AIzaSyC7HNtBeTQdV4MM-UO8KEA1cIV_oMmlVYM",
+    //     authDomain: "biblioteca-testes.firebaseapp.com",
+    //     projectId: "biblioteca-testes",
+    //     storageBucket: "biblioteca-testes.appspot.com",
+    //     messagingSenderId: "924247567031",
+    //     appId: "1:924247567031:web:7b2e8e1ff664223fdcbb32",
+    //     measurementId: "G-FQ9H10YGD6"
+    //   };
+    
+    //Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    var app = firebase.app();
+
+    var db = firebase.firestore(app); 
+
+    </script>
+    <script src="classes.js"></script>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    
+    <!-- SELECT2 script -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.js"></script>  
+
+    <script>
+        let livro_on_stage; // ANOTAÇÃO IMPORTANTE: estou quase no final do código e percepi que eu preparei todo o sitema para funcionar com apenas 1 livro no stage, entretanto ao criar o modo multiselec eu afirmo que é possível mais de um livro. Entretanto eu não vou alterar nada por horar, vou consertar com uma POG, mas talvez no futuro eu tenha essa necessidade de alterar
+        let modoMultiselectAtivo;
+        let livros_on_stage = [];
+        let classe_on_stage = [];
+        let LivrosFirebase = [];
+        let mb_acervo, pearson_acervo, clinical_acervo, oreilly_acervo
+
+        /* FUNÇÕES --------------------------------------- */
+
+        function alertaFlutuante(titulo, conteudo){
+            document.getElementById('toast_header_text').textContent = titulo
+            document.getElementById('toast_body_text').textContent = conteudo
+            
+            $('#alerta_flutuante').toast('show');
+        }
+
+        // Renderiza no MODO LISTA de itens
+        function renderizaLista(){
+            ModalCarregando.show()
+            console.log('Visualização em lista')
+            $('#elem_lista_livros').empty();
+
+            for (i in livros_on_stage){
+                $('#elem_lista_livros').append('<li data-id="'+livros_on_stage[i].mms_id+'" id="list_'+livros_on_stage[i].mms_id+'" class="list-group-item"><strong>'+livros_on_stage[i].mms_id+': </strong>'+livros_on_stage[i].title
+                +
+                '<button onClick="excluirLivro('+livros_on_stage[i].mms_id+')" type="button" style="float: right;" class="btn btn-outline-danger" id="excluir_'+livros_on_stage[i].mms_id+'">'
+                +
+                '<i class="bi bi-trash"></i></button></li>');
+            }
+            setTimeout(() => {ModalCarregando.hide()}, 2000);
+        }
+        
+        // Renderiza no MODO GALERIA DE IMAGENS de itens
+        function renderizaListaImgs(){
+            ModalCarregando.show()
+            console.log('Visualização em imagens')
+            $('#elem_lista_livros').empty();
+
+            for (i in livros_on_stage){
+
+                $('#elem_lista_livros').append(
+                    '<div class="col-6 col-sm-4 col-md-3 col-lg-2 livro my-3">'
+                    +
+                    '<img src="'+ livros_on_stage[i].Link_capa +'" class="img-fluid livro-img"/>'
+                    +
+                    '<p id="tags_array_'+ livros_on_stage[i].mms_id +'" class="elem_titulo_livro">'+ livros_on_stage[i].title
+                    +
+                    '<button type="button" class="btn bg-secondary"><i class="bi bi-plus-square"></i></button>'
+                    +
+                    '</p>'
+                    +
+                    '<p class="elem_mms_id">'+livros_on_stage[i].mms_id+'</p></div>'
+                );
+                // Para a o'reilly
+                try {
+                    let array_tags = livros_on_stage[i].Tag_Descricao.replaceAll('[','').replaceAll(']','').replaceAll("'",'').split(',')
+                    for (y in array_tags){
+                        $('#tags_array_'+ livros_on_stage[i].mms_id).append(
+                            '<span class="badge rounded-pill bg-secondary">' + array_tags[y] + '</span>'
+                        )
+                    }
+                } catch(e){console.log(e)}
+                
+                
+            }
+            setTimeout(() => {ModalCarregando.hide()}, 2000);
+        } 
+
+        // Função que agrupa objetos de um array | Mais informações em: https://stackoverflow.com/questions/14446511/most-efficient-method-to-groupby-on-an-array-of-objects
+        // f -> it'is the function and should must return string/number because it will be use as key in object
+        // Um exemplo de uso da função: groupBy(lista_cursos, v => v.classe), esse comenado separa por classe todos os elementos do array
+        function groupBy(x, f) {
+            return x.reduce((a, b) => ((a[f(b)] ||= []).push(b), a), {});
+        }
+
+        // Essa função formata dos dados para o seletor SELECT2. As especificações pedem um ID e um TEXT para cada item
+        function formataDadosSelect2(data){
+            // Formatando os parametro exigidos pelo SELECTOR2, criando os parametros id e text em cada item do array
+            data.map(x => x['text'] = x['titulo'])
+            data.map((x, index) => x['id'] = x.valueNorm)
+            // Separando por classe
+            let array_por_classe = groupBy(data, v => v.classe)
+            // Separando por classes
+            let resultado = [] // Dividido por Hierarquia de classes
+            Object.entries(array_por_classe).map(x => resultado.push({"text": x[0],"children": x[1]}))
+            // console.log(resultado)
+            return resultado
+        }
+
+        // Construtor da Lista de livros
+        function renderizaListaLivros(classe){
+            if (classe === 'mb_acervo'){
+                livros_on_stage = mb_acervo
+            
+            } else if(classe === 'clinical_acervo') {
+                livros_on_stage = clinical_acervo
+
+            } else if(classe === 'oreilly_acervo') {
+                livros_on_stage = oreilly_acervo
+
+            } else if(classe === 'pearson_acervo') {
+                livros_on_stage = pearson_acervo
+
+            } else {
+                console.log('Erro base')
+            }
+            renderizaLista()
+        }
+         
+        // Função para mudar o foco do botão da base de dados
+        function btnFocus(id){
+            console.log(id)
+            let btns = ['btn_mb_acervo', 'btn_pearson_acervo', 'btn_clinical_acervo', 'btn_oreilly_acervo', 'btn_completo_acervo']
+            // Todos com o padrão sem foco
+            btns.forEach(x => document.getElementById(x).className = "btn btn-outline-primary btn-bases mx-2")
+            // Escolhido da função com o padrão de foco
+            document.getElementById(id).className = "btn btn-primary btn-bases mx-2"
+        }
+
+        // Essa Função verifica se a tag é da uninove ou não (bool)
+        function algumaTagUninove(tag){
+            let tags_uninove = []
+            lista_cursos.forEach(x => tags_uninove.push(x.valueNorm))
+            if (tags_uninove.includes(tag)){
+                return true
+            } else {
+                return false
+            }
+        }
+
+        // Formata os metadados dos livros por base. Params: valores = metadados de 1 livro | base = base dados do livro (cada uma tem suas regras)
+        function formataMetaDadosLivro(metadados_obj, base){
+            let metadados_formatado = {}
+            let novas_tags
+
+            // if (base === undefined || null) {base = "mb"}
+
+            if (base === "mb"){
+                // TROCA "" por "index"
+                metadados_formatado["index"] = metadados_obj[""]
+                // sem alterações
+                metadados_formatado["mms_id"] = metadados_obj.mms_id
+                // TROCA "title" por "titulo"
+                metadados_formatado["titulo"] = metadados_obj.title
+                // TROCA "Idioma" por "idioma"
+                metadados_formatado["idioma"] = metadados_obj.Idioma
+                // TROCA "Descricao" por "descricao"
+                metadados_formatado["descricao"] = metadados_obj.Descricao
+                // TROCA "Tag_Descricao" por "tags_area" E TRANSFORMA a strings em array
+                // Devidos aos muitos erros de tags vazias. colocamos essa regra para atribuir um array vazio nesses casos
+                if(metadados_obj.Tag_Descricao === '' || metadados_obj.Tag_Descricao.length === 0 ||  metadados_obj.Tag_Descricao === undefined){
+                    metadados_formatado["tags_area"] = []
+                } else {
+                    try {
+                        novas_tags = metadados_obj.Tag_Descricao.replaceAll('[','').replaceAll(']','').replaceAll("'",'').split(',')
+                        metadados_formatado["tags_area"] = novas_tags
+                    } catch(e){
+                        console.log("MB: Erro ao converter tags: " + metadados_obj.Tag_Descricao + e)
+                        metadados_formatado["tags_area"] = []
+                    }
+                }
+                // TROCA "Tag_link" por "link_acesso"
+                metadados_formatado["link_acesso"] = metadados_obj.Tag_link.replace('https://integrada.minhabiblioteca.com.br/books/', 'https://aluno.uninove.br/biblioteca/minha_biblioteca.php?base=mb&isbn=')
+                // TROCA "Link_capa" por "link_capa"
+                metadados_formatado["link_capa"] = metadados_obj.Link_capa
+                // ATRIBUI o valor de 'mb' como base
+                metadados_formatado["base_dados"] = 'mb'
+                // Retorna um novo objeto
+                return metadados_formatado
+
+
+            } else if (base === "pe") {
+                // TROCA "" por "index"
+                metadados_formatado["index"] = metadados_obj[""]
+                // sem alterações
+                metadados_formatado["mms_id"] = metadados_obj.mms_id
+                // TROCA "title" por "titulo"
+                metadados_formatado["titulo"] = metadados_obj.title
+                // TROCA "Idioma" por "idioma"
+                metadados_formatado["idioma"] = 'por'
+                // TROCA "Descricao" por "descricao"
+                metadados_formatado["descricao"] = metadados_obj.Descricao
+                // TROCA "Tag_Descricao" por "tags_area" E TRANSFORMA a strings em array
+                // Devidos aos muitos erros de tags vazias. colocamos essa regra para atribuir um array vazio nesses casos
+                if(metadados_obj.Tag_Descricao === '' || metadados_obj.Tag_Descricao.length === 0 ||  metadados_obj.Tag_Descricao === undefined){
+                    metadados_formatado["tags_area"] = []
+                } else {
+                    try { 
+                        novas_tags = metadados_obj.Tag_Descricao.replaceAll('[','').replaceAll(']','').replaceAll("'",'').split(',')
+                        metadados_formatado["tags_area"] = novas_tags
+                    } catch(e){
+                        console.log(metadados_obj.Tag_Descricao)
+                        console.log("PE: Erro ao converter tags: " + metadados_obj.Tag_Descricao + e)
+                        metadados_formatado["tags_area"] = []
+                    }
+                }
+                
+                // TROCA "Link_Acesso" por "link_acesso"
+                // ATENÇÃO -- O ITEM metadados_obj.Link_Capa RETORNA O ISBN, POR ISSO VAMOS USAR PARA O LINK DA CAPA E DE ACESSO
+                metadados_formatado["link_acesso"] = "https://aluno.uninove.br/biblioteca/pearson.php?base=pear&isbn=" + metadados_obj.Link_Capa
+                // TROCA "Link_Capa" por "link_capa"
+                metadados_formatado["link_capa"] = metadados_obj.Link_Capa
+                // ATRIBUI o valor de 'pe' como base
+                metadados_formatado["base_dados"] = 'pe'
+                // Retorna um novo objeto
+                return metadados_formatado
+
+
+            } else if (base === "ck") {
+                // TROCA "" por "index"
+                metadados_formatado["index"] = metadados_obj[""]
+                // sem alterações
+                metadados_formatado["mms_id"] = metadados_obj.mms_id
+                // TROCA "title" por "titulo"
+                metadados_formatado["titulo"] = metadados_obj.title
+                // ATRIBUI o valor de 'eng' para todos os livros da base
+                metadados_formatado["idioma"] = 'eng'
+                // TROCA "Descricao" por "descricao"
+                metadados_formatado["descricao"] = metadados_obj.Descricao
+                // TROCA "Tag_Descricao" por "tags_area" E TRANSFORMA a strings em array
+                // Devidos aos muitos erros de tags vazias. colocamos essa regra para atribuir um array vazio nesses casos
+                if(metadados_obj.Tag_Descricao === '' || metadados_obj.Tag_Descricao.length === 0 ||  metadados_obj.Tag_Descricao === undefined){
+                    metadados_formatado["tags_area"] = []
+                } else {
+                    try {
+                        novas_tags = metadados_obj.Tag_Descricao.replaceAll('[','').replaceAll(']','').replaceAll("'",'').split(',')
+                        metadados_formatado["tags_area"] = novas_tags
+                    } catch(e){
+                        console.log("CK: Erro ao converter tags: " + metadados_obj.Tag_Descricao + e)
+                        metadados_formatado["tags_area"] = []
+                    }
+                }
+                // TROCA "Link_Acesso" por "link_acesso"
+                metadados_formatado["link_acesso"] = metadados_obj.Link_Acesso
+                // TROCA "Link_Capa" por "link_capa"
+                metadados_formatado["link_capa"] = metadados_obj.Link_Capa
+                // ATRIBUI o valor de 'ck' como base
+                metadados_formatado["base_dados"] = 'ck'
+                // Retorna um novo objeto
+                return metadados_formatado
+
+
+            } else if (base === "or") {
+
+
+            } else {
+                console.log("ERRO!, base de dados não detectada")
+            }
+        }
+
+        // Fazer um pré-load para cadastrar no firebase
+        function preLoadAdd(valores, base_dados){
+            let metadados = formataMetaDadosLivro(valores, base_dados)
+            LivrosFirebase.push(metadados)
+        }
+
+        // Arruma index dos aobjetos do pre-load
+        function indexPreload(){
+            for (i in LivrosFirebase){
+                LivrosFirebase[i].index = parseFloat(i)
+            }
+        }
+
+        // Cadastra livros no firebase
+        function cadastroFirebase(nome_documento, valores, base_dados){
+            // Formatando os dados
+            // valores = formataMetaDadosLivro(valores, base_dados)
+
+            // // Pegando um curso da uninove randomicamente
+            // let random_curso = lista_cursos[Math.floor(Math.random()*lista_cursos.length)].valueNorm;
+
+            // Adicionando o curso ao array de tags
+            // console.log(valores.tags_area)
+            // valores.tags_area.push(random_curso)
+            // console.log(valores, random_curso)
+
+            // console.log("Cadastrando o livro: " + nome_documento + " com as tags: " + valores.tags_area)
+            db.collection("acervo-completo").doc(nome_documento.toString()).set(valores)
+            .then(() => {
+                console.log("Document successfully written!");
+            })
+            .catch((error) => {
+                console.error("Error writing document: ", error);
+            });
+        }
+
+        // Tira valores diplicados
+        function removeDuplicados(array){
+            return array.filter(function(elem, index, self) {
+                return index === self.indexOf(elem);
+            })
+        }
+
+        // Adiciona TAg ao livro no firebase.
+        function addTagFirebase(){
+            // Se o livro_on_stage estiver vazio
+            if (livro_on_stage === undefined){
+                return "Erro, nenhum livro selecionado!!"
+            }
+
+            if (modoMultiselectAtivo){
+                // Modo Multiselect Ativo
+                console.log("Adicionando livro no modo Multi Seleção")
+                let tags_array_input_multiselect = $('#tags-input-selector-multiselect').select2('data').map(x => x.id) // Pega as tags do input
+                console.log('Tags para adicionar: ', tags_array_input_multiselect)
+                let livros_target = table.getSelectedData().map(x => x.titulo)
+                console.log('Livros que receberão as tasgs: ', livros_target) // Pega os livros selecionados da tabela para receber as tags
+                // Para cada livro selecionado, vamos atribuir as tags do input
+                table.getSelectedData().forEach(x => {
+                    let mms_id_target = x.mms_id
+                    console.log(mms_id_target)
+                    let index_livro = LivrosFirebase.findIndex(x => x.mms_id === mms_id_target)
+                    console.log(index_livro)
+                    // Dado um set ao livro no db do firebase através do index obtido
+                    db.collection("acervo-completo").doc(mms_id_target.toString()).update({
+                        "tags_area": removeDuplicados(LivrosFirebase[index_livro].tags_area.concat(tags_array_input_multiselect)),
+                    })
+                    .then(() => {
+                        console.log("Document successfully updated!");
+                    });
+                    LivrosFirebase[index_livro].tags_area = removeDuplicados(LivrosFirebase[index_livro].tags_area.concat(tags_array_input_multiselect))
+                    console.log(LivrosFirebase[index_livro])
+                })
+                alertaFlutuante('Alterações Salvas', 'As alterações para os livros: ' + livros_target  + ' foram salvas com sucesso')
+            } else {
+                // Modo normal
+                console.log("Adicionando livro normal")
+                let tags_array_input_single = $('#tags-input-selector_single_book').select2('data').map(x => x.id) // Pega as tags do input
+                console.log('Tags para adicionar: ', tags_array_input_single)
+                console.log('Livro que receberá as tasgs: ', table.getSelectedData()[0].titulo) 
+                let index_livro = LivrosFirebase.findIndex(x => x.mms_id === table.getSelectedData()[0].mms_id)
+                let mms_id_livro_targe = table.getSelectedData()[0].mms_id // Pega o único livro selecionado da tabela para receber a tag
+                console.log('Index no firebase:', mms_id_livro_targe)
+                // Dado um set ao livro no db do firebase através do index obtido
+                db.collection("acervo-completo").doc(mms_id_livro_targe.toString()).update({
+                    "tags_area": removeDuplicados(LivrosFirebase[index_livro].tags_area.concat(tags_array_input_single)),
+                })
+                .then(() => {
+                    console.log("Document successfully updated!");
+                });
+                // LivrosFirebase[index_livro].tags_area = removeDuplicados(LivrosFirebase[index_livro].tags_area.concat(tags_array_input_single))
+                alertaFlutuante('Alterações Salvas', 'As alterações para o livro: ' + LivrosFirebase[index_livro].titulo  + ' foram salvas com sucesso')
+                atualiza_livro_on_stage_edit()
+            }
+
+            //Atualiza visualizadores 
+            atualiza_tabela()
+        }
+
+        // Gerador de Tags em pills html | resultado_em_string é um parm booleano, onde o valor padrão é FALSE
+        // ATENÇÃO, EU AINDA NÃO CONSEGUI ACABAR ESSA FUNÇÃO - MOTIVO: NÃO CONSIGO CONVERTER STRING EM HTML
+        function geraPills(array_tags, resultado_em_string_bool){
+            let element_array = []
+            resultado_em_string_bool === undefined ? resultado_em_string_bool = false : resultado_em_string_bool= true
+            // Tornando string em array
+            try { 
+                array_tags = cell.getValue().replaceAll('[','').replaceAll(']','').replaceAll("'",'').split(',')
+            } catch(e){
+                console.log(e)
+            }
+            // Montanto as pills
+            for (i in array_tags){
+                element_array.push('<span class="badge rounded-pill bg-secondary">' + array_tags[i] + '</span>')
+            }
+            // o resultado deve vir em HTML ou STRING?
+            if (resultado_em_string_bool){
+                // Retorna os elementos html em formato de string
+                element_em_string = element_array.join('')
+                console.log(element_em_string)
+                return element_em_string
+            } else {
+                // Retorna os elementos em html
+                element_array = element_array.join('')
+                console.log(element_array)
+                return element_array
+            }
+            
+        }
+
+        // Seção para Edição do livro_on_stage (variável global)
+        function atualiza_livro_on_stage_edit() {
+            var tags_retornadas
+            let linha_tabela_selecionada
+            let livro_tabela_selecionado
+            let elem
+            // Reset dos dados
+            $(livro_edit_categorias).empty()
+            // Pego os dados do cache do Firebase
+            linha_tabela_selecionada = table.getSelectedData()[0].mms_id
+            // console.log(linha_tabela_selecionada)
+            livro_tabela_selecionado = cache_from_firebase.filter(x => x.mms_id === linha_tabela_selecionada)[0]
+            // Atribuindo os valores
+            document.getElementById('livro_edit_titulo').textContent = livro_tabela_selecionado.titulo
+            document.getElementById('livro_edit_img').src = livro_tabela_selecionado.link_capa
+            document.getElementById('livro_edit_descricao').textContent = livro_tabela_selecionado.descricao
+            // Atribuindo as tags
+            elem = document.getElementById('livro_edit_categorias')
+            // Inicializa o seletor SELECT2
+            $('#mensagem_preload').hide()
+                $('#tags_uninove_section').show()
+                $('.tags-input-selector').select2({
+                    data: formataDadosSelect2(lista_cursos),
+                    tags: true,
+                    placeholder: "Selecione alguma Tag"
+            })
+            firebaseRetornaTag(livro_tabela_selecionado.mms_id).then(function(x){
+                console.log(x)
+                tags_retornadas = x
+                if(tags_retornadas.length > 0 ){
+                    let tags_uninove = []
+                    tags_retornadas.map( (x) => { // Verificando se alguma dela é da uninove
+                        if (algumaTagUninove(x.trim())) {
+                            tags_uninove.push(x.trim())
+                            $(livro_edit_categorias).append('<span class="badge rounded-pill bg-warning text-dark">' + x + '</span>')
+                        } else {
+                            $(livro_edit_categorias).append('<span class="badge rounded-pill bg-secondary">' + x + '</span>')
+                        }
+                        $('.tags-input-selector').select2().val(tags_uninove).trigger("change")
+                    })
+                } else {
+                    document.getElementById('livro_edit_categorias').textContent = 'O livro não contém tags'
+                }
+            })  
+        }
+
+        // Atualiza tabela de dados
+        function atualiza_tabela(){
+            // Precisamos armazenar a linha escolhida, pois quando atualizarmos os dados ela será deselecionada
+            let livros_anteriores_selecionados = table.getSelectedData()[0].index
+            // Atualiza tabela
+            table.replaceData(LivrosFirebase)
+            // Agora, depois de atualizar a tabela, selecionamos o livro anterior
+            table.selectRow(table.getRows().filter(row => row.getData().index == livros_anteriores_selecionados));
+            // table.selectRow(table.getRows().filter(row => row.getData().mms_id == '991443983106981'));
+
+
+        }
+        
+        // Modo Multi Select
+        function modoMultiSelect(bool){
+            if(bool){
+                // Ativo
+                modoMultiselectAtivo = true
+                document.getElementById('div_edicao_livro').style = 'background-color: #fafafa; display: none'
+                document.getElementById('div_multiselect').style = 'background-color: #fafafa; display: initial'
+                table.options.selectable = true
+                atualiza_tabela()
+                // Reseta seção do multiselect
+                renderizaMultiselectLista()
+
+            } else {
+                // Desativado
+                modoMultiselectAtivo = false
+                document.getElementById('div_edicao_livro').style = 'background-color: #fafafa; display: initial'
+                document.getElementById('div_multiselect').style = 'background-color: #fafafa; display: none'
+                table.options.selectable = 1
+                table.deselectRow();
+                atualiza_tabela()
+                // Reseta seção do edit
+                livro_on_stage = ''
+                atualiza_livro_on_stage_edit()
+            }
+        }
+
+        function renderizaMultiselectLista(){
+            let array = table.getSelectedData()
+            $('#lista_multiselect').empty()
+            array.forEach(x => $('#lista_multiselect').append('<li>'+x.titulo+'</liv>'))
+        }
+
+        /* REQUISIÇÕES AJAX --------------------------------------- */
+        $.ajax({
+        type: "GET",
+        url: "bases/mb_json.json",
+        dataType: "json",
+        success: function(response) {
+                mb_acervo = response
+                // Primeiros resultados
+                // mb_acervo = mb_acervo.slice(0, 10)
+                // Quantidade de resultados
+                document.getElementById('num_mb').textContent = mb_acervo.length
+                // //---------------
+                for (i in mb_acervo){
+                    preLoadAdd(mb_acervo[i], 'mb')
+                }
+            }
+            
+        })
+
+        // Livros da Clinical Key
+        $.ajax({
+        type: "GET",
+        url: "bases/clinical_json.json",
+        dataType: "json",
+        success: function(response) {
+                clinical_acervo = response
+                // Primeiros resultados
+                // clinical_acervo = clinical_acervo.slice(0, 10)
+                // Quantidade de resultados
+                document.getElementById('num_clinical').textContent = clinical_acervo.length
+                // //---------------
+                for (i in clinical_acervo){
+                    preLoadAdd( clinical_acervo[i], 'ck')
+                }
+            }
+        })
+
+        // Livros da Pearson
+        $.ajax({
+        type: "GET",
+        url: "bases/pearson_json.json",
+        dataType: "json",
+        success: function(response) {
+                pearson_acervo = response
+                // Primeiros resultados
+                // pearson_acervo = pearson_acervo.slice(0, 10)
+                // Quantidade de resultados
+                document.getElementById('num_pearson').textContent = pearson_acervo.length
+                // //---------------
+                for (i in pearson_acervo){
+                    preLoadAdd(pearson_acervo[i], 'pe')
+                }
+            }
+        })
+        
+        //Livros da O'reilly
+        /* $.ajax({
+        type: "GET",
+        url: "bases/oreilly_json.json",
+        dataType: "json",
+        success: function(response) {
+                oreilly_acervo = response
+                console.log(oreilly_acervo)
+                // Primeiros resultados
+                // oreilly_acervo = oreilly_acervo.slice(0, 20)
+                // Quantidade de resultados
+                document.getElementById('num_oreilly').textContent = oreilly_acervo.length
+            }
+        }) */
+
+        /* FUNÇÕES FIREBASE --------------------------------------- */
+        let tags_from_firebase = []
+        let cache_from_firebase = []
+        function firebaseRetornaTag(mms_id){
+            mms_id = mms_id.toString()
+            return new Promise(function(resolve, reject) {
+                db.collection("acervo-completo")
+                .doc(mms_id)
+                .get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        // console.log("Document data:", doc.data());
+                        tags_from_firebase = doc.data().tags_area
+                        cache_from_firebase.push(doc.data())
+                        resolve(tags_from_firebase)
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log("No such document!");
+                    }                
+                })
+                .catch((error) => {
+                    console.log("Error getting documents: ", error);
+                });
+            });            
+        }
+
+        /* EVENT LISTENERS  --------------------------------------- */
+
+        // Listener para mudar a base de dados quando os botões forem clicados
+        document.getElementById("btn_mb_acervo").addEventListener("click", function(){
+            btnFocus('btn_mb_acervo')
+            // Caso não haja dados na tabela, adiciona primeiro e depois filtra
+            if(!table.getData().length){  
+                table.setData(LivrosFirebase);
+            }
+            table.setFilter("base_dados", "=",'mb')
+        });
+        document.getElementById("btn_pearson_acervo").addEventListener("click", function(){
+            btnFocus('btn_pearson_acervo')
+            // Caso não haja dados na tabela, adiciona primeiro e depois filtra
+            if(!table.getData().length){  
+                table.setData(LivrosFirebase);
+            }
+            table.setFilter("base_dados", "=",'pe')
+        });
+        document.getElementById("btn_clinical_acervo").addEventListener("click", function(){
+            btnFocus('btn_clinical_acervo')
+            // Caso não haja dados na tabela, adiciona primeiro e depois filtra
+            if(!table.getData().length){  
+                table.setData(LivrosFirebase);
+            }
+            table.setFilter("base_dados", "=",'ck')
+        });
+        document.getElementById("btn_oreilly_acervo").addEventListener("click", function(){
+        });
+        document.getElementById("btn_completo_acervo").addEventListener("click", function(){
+            indexPreload()
+            document.getElementById('num_acervo_completo').textContent = LivrosFirebase.length
+            btnFocus('btn_completo_acervo')
+            table.setData(LivrosFirebase);
+        });
+        document.getElementById("salvar-edicao-livro-on-stage").addEventListener("click", function(){
+            addTagFirebase()
+        })
+        document.getElementById("salvar-edicao-livro-on-stage-multiselect").addEventListener("click", function(){
+            addTagFirebase()
+        });
+        document.getElementById("btn_switch_multiselect").addEventListener("click", function(){
+            var isChecked = document.getElementById("btn_switch_multiselect").checked;
+            modoMultiSelect(isChecked)
+        });
+        document.getElementById("deselect-all").addEventListener("click", function(){
+            table.deselectRow();
+            renderizaMultiselectLista()
+        });
+        document.getElementById("select-all").addEventListener("click", function(){
+            table.selectRow("visible"); // Seleciona todas as linhas visiveis na tabela 
+            renderizaMultiselectLista()
+        });
+        document.getElementById("atualiza_tabela").addEventListener("click", function(){
+            table.setData(LivrosFirebase);
+        });
+        
+        /*
+        .addEventListener("click", function(){
+            atualiza_tabela()
+        }); */          
+        
+        // Listener para quando uma tag do input SELECT2 for adicionada
+        $('.tags-input-selector').on("select2:select", function (e) {
+            let tag = e.params.data.id 
+            console.log("Tag adicionada ao input:", tag);
+            // livro_on_stage.tags_area.push(tag)
+            // atualiza_livro_on_stage_edit()
+        });
+
+        $('.tags-input-selector').on("select2:unselect", function (e) { 
+            let tag_para_excluir = e.params.data.id;
+            console.log("Tag excluida no input:", tag_para_excluir);
+            /*livro_on_stage.tags_area = tag_no_input.filter(x => x.id !== tag_para_excluir) // Retorna um novo array sem a tag removida
+            atualiza_livro_on_stage_edit()*/
+        });
+        
+        // Inicia o aviso flutuante
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+        var toastList = toastElList.map(function (toastEl) {
+            return new bootstrap.Toast(toastEl)
+        })
+
+        /* SCRIPT DA TABELA - TABULAR --------------------------------------- */
+        // Formater da coluna título da tabela
+        var NegritoFormater = function(cell, formatterParams){
+            //cell - the cell component
+            //formatterParams - parameters set for the column
+            var output = "<strong>" + cell.getValue() + "</strong>"
+            return output;
+        }
+
+        function retornaElemento(x){
+            let array_tags = []
+            let element_array = []
+            return new Promise(function(resolve, reject) {
+                firebaseRetornaTag(x).then(function(v) {
+                    // console.log(v); // Log the value once it is resolved
+                    array_tags = v
+                    for (i in array_tags){
+                        // Se alguma das pills é uma tag uninove 
+                        if (algumaTagUninove(array_tags[i].trim())){
+                            element_array.push('<span class="badge rounded-pill bg-warning text-dark">' + array_tags[i] + '</span>')
+                        } else {
+                            element_array.push('<span class="badge rounded-pill bg-secondary">' + array_tags[i] + '</span>')
+                        }
+                    }
+                    // Juntanto os elemens htmls em formato de string
+                    element_array = element_array.join('')
+                    // console.log(element_array)            
+                    resolve(element_array)
+                })
+                .catch(function(v) {
+                    console.log('erro!: ', v)
+                });
+            })
+        }
+
+        // Gera as pills dentro da célula de tagas da tabela
+        var arrayTagsFormater = function(cell, row, formatterParams){
+            // console.log(cell.getValue())
+            retornaElemento(cell.getValue()).then(function(v) {
+                // console.log('resolved')
+                // return v
+                $('#pills-cell-'+cell.getValue()).append(v)
+            })
+            return '<div id="pills-cell-'+cell.getValue()+'"></div>'            
+        }
+        
+        // create Tabulator on DOM element with id "main-table"
+        var table = new Tabulator("#main-table", {
+            layout: "fitColumns", //fit columns to width of table (optional)
+            pagination: "local",
+            paginationSize: 10,
+            selectable: 1,
+            paginationSizeSelector: [10, 25, 50, 100, 200, 500, 1000, 2000],
+            columns: [ //Define Table Columns
+                {title:"", field:"index", sorter:"number", width: 10},
+                {title:"Base", field:"base_dados",  width: 50},
+                {title:"mms_id", field:"mms_id", sorter:"number"},
+                {title:"Titulo", field:"titulo", sorter:'number', formatter: NegritoFormater, widthGrow:1},
+                {title:"Descrição", field:"descricao", hozAlign:"center"},
+                {title:"Tags", field:"mms_id", hozAlign:"center", formatter: arrayTagsFormater, widthGrow:4},
+            ]
+        });
+
+        // Quando alguma linha da tabela for clicada, mande o livro para o stage
+        table.on("rowClick", function(e, row){
+            var mms_id_livro_alvo = row.getData().mms_id // row.getData() devolve os valores da respectiva linha clicada Ex: row.getData().titulo
+            var index_livro_alvo = LivrosFirebase.findIndex(x => x.mms_id === mms_id_livro_alvo)
+            livro_on_stage = LivrosFirebase[index_livro_alvo]
+            
+            if(modoMultiselectAtivo){
+                renderizaMultiselectLista()
+            }
+            
+            atualiza_livro_on_stage_edit()
+        });
+
+        table.on("rowDeselected", function(row){
+            //row - row component for the deselected row
+            console.log(row.getData().titulo, 'foi deselecionado')
+        });
+        
+        /* OUTROS COMANDOS --------------------------------------- */
+        // let startTime = performance.now()
+        // let endTime
+        // let dataRaw = []
+        // // db.collection("/acervo-completo/")
+        // //     .where("Tag_Descricao", "==", "['MB Sociais aplicadas']")
+        // db.collection("/sandbox/sandbox-livros-1/medicina")
+        //     .limit(10)
+        //     .get()
+        //     .then((querySnapshot) => {
+        //         // Loop dentro do curso
+        //         querySnapshot.forEach((doc) => {
+        //             // doc.data() is never undefined for query doc snapshots
+        //             dataRaw.push(doc.data())
+        //         })
+        //         endTime = performance.now()
+        //         console.log('Call to doSomething took'+ endTime - startTime +'milliseconds')
+            
+        //     })
+        //     .catch((error) => {
+        //         console.log("Error getting documents: ", error);
+        //      });
+        
+        // objeto_modelo = {
+        //     "": ,
+        //     "mms_id": ,
+        //     "titulo": ,
+        //     "idioma": ,
+        //     "descricao": ,
+        //     "tags_area": [],
+        //     "link_acesso": ,
+        //     "link_capa": 
+        // }
+
+        $('#tags_uninove_section').hide()
+
+        
+    </script>
+</body>
+</html>
