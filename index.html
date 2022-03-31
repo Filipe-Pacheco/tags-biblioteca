@@ -31,6 +31,11 @@
 
 </head>
     <body style="height: 100vh;">
+        <!-- Barra de alerta -->
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Atenção!</strong> Este site está em fase de testes. Se você encontrar algum erro, favor reportar no e-mail: filipepacheco@uninove.br
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
         <div class="container-fluid main-wrap" style="height: -webkit-fill-available; height: inherit;">
             <!-- Seção superior -->
             <div id="elem_lista_bases" class="row mt-2 mx-2" style="padding-bottom: 10px; border-bottom: grey 1px solid;">
@@ -809,7 +814,9 @@
             indexPreload()
             document.getElementById('num_acervo_completo').textContent = LivrosFirebase.length
             btnFocus('btn_completo_acervo')
-            table.setData(LivrosFirebase);
+            if(!table.getData().length){  
+                table.setData(LivrosFirebase);
+            }
         });
         document.getElementById("salvar-edicao-livro-on-stage").addEventListener("click", function(){
             addTagFirebase()
